@@ -1,10 +1,12 @@
 {
   "name": "u-wave-nodejs-client",
   "version": "0.1.0",
-  "description": "a tiny u-wave nodejs client for bot building",
+  "description": "a wip barebones node.js client for u-wave",
   "main": "lib/index.js",
-  "author": "Uriell <uriellarttusviana+github@gmail.com>",
+  "repository": "git@github.com:uriell/u-wave-nodejs-client.git",
+  "author": "Uriell <me+github@uriell.dev>",
   "license": "MIT",
+  "private": false,
   "scripts": {
     "build": "tsc",
     "format:all": "yarn run prettier --check \"src/**/*.ts\"",
