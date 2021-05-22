@@ -9,8 +9,10 @@
   "private": false,
   "scripts": {
     "build": "tsc",
-    "format:all": "yarn run prettier --check \"src/**/*.ts\"",
-    "format": "prettier"
+    "format:all": "npm run prettier -- --check \"src/**/*.ts\"",
+    "format": "prettier",
+    "prepare": "npm run build",
+    "release": "np --no-tests"
   },
   "dependencies": {
     "node-fetch": "2.6.1",
@@ -20,6 +22,7 @@
     "@types/node": "14.14.28",
     "@types/node-fetch": "2.5.8",
     "@types/ws": "7.4.0",
+    "np": "7.5.0",
     "prettier": "2.2.1",
     "typescript": "4.1.5"
   }
