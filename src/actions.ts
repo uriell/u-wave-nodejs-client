@@ -6,3 +6,9 @@ export const login = (email: string, password: string) =>
     email,
     password,
   });
+
+export const getCurrentUser = (email: string, password: string) =>
+  post<uWaveAPI.LoginBody, uWaveAPI.LoginResponse>('/auth/login', {
+    email,
+    password,
+  });

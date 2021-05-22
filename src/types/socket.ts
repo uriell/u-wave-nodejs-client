@@ -1,79 +1,3 @@
-export declare namespace uWaveAPI {
-  type LoginBody = {
-    email: string;
-    password: string;
-  };
-
-  type LoginResponse = {
-    meta: {
-      jwt: string;
-      socketToken: string;
-    };
-    links: {};
-    data: User;
-  };
-}
-
-declare namespace SourceDatas {
-  type YouTube = {
-    embedWidth: string | number | null;
-    embedHeight: string | number | null;
-    blockedIn: string[];
-    chapters: Array<{
-      start: number;
-      end: number;
-      title: string;
-    }>;
-  };
-
-  type SoundCloud = {
-    fullTitle: string;
-    permalinkUrl: string;
-    streamUrl: string;
-    artistUrl: string;
-    username: string;
-  };
-}
-
-type SourceData = SourceDatas.YouTube | SourceDatas.SoundCloud;
-
-type Media = {
-  _id: string;
-  duration: number;
-  artist: string;
-  title: string;
-  thumbnail: string;
-  sourceType: 'youtube' | 'soundcloud';
-  sourceID: number | string;
-  sourceData: SourceData;
-  createdAt: string;
-  updatedAt: string;
-};
-
-type Playback = {
-  start: number;
-  end: number;
-  title: string;
-  artist: string;
-  media: Media;
-};
-
-type User = {
-  _id: string;
-  username: string;
-  slug: string;
-  avatar: string;
-  roles: string[];
-  role: number;
-  level: number;
-  language: string;
-  exiled: boolean;
-  activePlaylist?: string;
-  lastSeenAt: string;
-  createdAt: string;
-  updatedAT: string;
-};
-
 declare namespace uWaveSocket {
   type Authenticated = {
     command: 'authenticated';
@@ -281,8 +205,9 @@ export type SocketEvents =
   | uWaveSocket.WaitlistRemove
   | uWaveSocket.WaitlistUpdate;
 
-export type SocketCommands = SocketEvents['command'];
-export type LibCommands = 'login' | 'connected' | 'disconnected' | 'error';
+type SocketCommands = SocketEvents['command'];
+type LibCommands = 'login' | 'connected' | 'disconnected' | 'error';
+
 export type Commands = SocketCommands | LibCommands;
 
 export type SocketPayloadsMap = {
