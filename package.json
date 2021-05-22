@@ -1,6 +1,6 @@
 {
   "name": "u-wave-nodejs-client",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "a wip barebones node.js client for u-wave",
   "main": "lib/index.js",
   "repository": "git@github.com:uriell/u-wave-nodejs-client.git",
@@ -12,7 +12,7 @@
     "format:all": "npm run prettier -- --check \"src/**/*.ts\"",
     "format": "prettier",
     "prepare": "npm run build",
-    "release": "np --no-tests"
+    "release": "np --no-yarn --no-tests"
   },
   "dependencies": {
     "node-fetch": "2.6.1",
