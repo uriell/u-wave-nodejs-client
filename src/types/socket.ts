@@ -1,3 +1,5 @@
+import { Playback, User } from './entities';
+
 declare namespace uWaveSocket {
   type Authenticated = {
     command: 'authenticated';
