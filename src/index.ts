@@ -93,7 +93,16 @@ export class uWave {
   }
 
   public logout() {
-    return this.send({ command: 'logout' });
+    // cleanup
+    this.emitter.removeAllListeners();
+
+    if (this.socket) {
+      this.socket?.removeAllListeners();
+    }
+
+    this.send({ command: 'logout' });
+
+    this.socket?.close();
   }
 
   private connectSocket(connectionString: string) {
@@ -143,7 +152,7 @@ export class uWave {
     }
   }
 
-  private emit<I>(command: Commands, payload?: I) {
+  private emit<E extends Commands>(command: E, payload?: SocketPayloadsMap[E]) {
     return this.emitter.emit(command, payload);
   }
 
