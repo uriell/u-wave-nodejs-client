@@ -1,0 +1,19 @@
+{
+  "name": "u-wave-nodejs-client-example",
+  "version": "1.0.0",
+  "description": "an example of u-wave-node-js-client usage",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "ts-node $npm_package_main"
+  },
+  "devDependencies": {
+    "ts-node": "9.1.1",
+    "typescript": "4.2.4"
+  },
+  "dependencies": {
+    "dotenv": "10.0.0",
+    "u-wave-nodejs-client": "0.1.0"
+  }
+}
