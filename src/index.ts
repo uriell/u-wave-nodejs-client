@@ -26,6 +26,7 @@ export class uWave {
   private modules: {
     auth?: Auth;
   } = {};
+  // #endregion
 
   static KEEP_ALIVE_MESSAGE = '-';
 
@@ -48,7 +49,13 @@ export class uWave {
   }
 
   get auth() {
-    return this.modules.auth || (this.modules.auth = new Auth(this));
+    return (
+      this.modules.auth ||
+      (this.modules.auth = new Auth(this, (jwt, socketToken) => {
+        this.jwt = jwt;
+        this.socketToken = socketToken;
+      }))
+    );
   }
 
   public sendChat(message: string) {
@@ -160,9 +167,7 @@ export class uWave {
     if (!this.socket || !this.isConnected) return;
 
     if (!this.socketToken && this.jwt) {
-      const res = await this.auth.getSocketToken();
-
-      this.socketToken = res.data.socketToken;
+      this.socketToken = await this.auth.getSocketToken();
     }
 
     if (this.socketToken) {

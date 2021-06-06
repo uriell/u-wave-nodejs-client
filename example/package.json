@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "ts-node $npm_package_main"
+    "start": "ts-node src/"
   },
   "devDependencies": {
     "ts-node": "9.1.1",

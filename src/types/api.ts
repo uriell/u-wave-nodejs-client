@@ -1,23 +1,28 @@
 import { User } from './entities';
 
+type ItemResponse<D = {}, M = {}> = {
+  meta: M;
+  links: { self?: string };
+  data: D;
+};
+
 export declare namespace uWaveAPI {
   type LoginBody = {
     email: string;
     password: string;
   };
 
-  type LoginResponse = {
-    meta: {
+  type LoginResponse = ItemResponse<
+    User,
+    {
       jwt: string;
       socketToken: string;
-    };
-    links: {};
-    data: User;
-  };
+    }
+  >;
 
-  type SocketTokenResponse = {
-    meta: { url: string };
-    links: { self: string };
-    data: { socketToken: string };
-  };
+  type LogoutResponse = ItemResponse;
+
+  type SocketTokenResponse = ItemResponse<{ socketToken: string }>;
+
+  type CurrentUserResponse = ItemResponse<User | null>;
 }
