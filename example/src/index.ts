@@ -39,18 +39,11 @@ uw.on('connected', () => {
   console.info('connected');
 });
 
-let counter = 0;
-
 uw.on('authenticated', () => {
   console.info('authenticated');
 
-  uw.sendChat('hello world ' + counter);
-  counter++;
-
-  uw.getSocketToken().then(console.log);
+  uw.sendChat('hello world');
 });
-
-uw.login(credentials.email, credentials.password).then(() => uw.connect());
 
 process.on('SIGINT', () => {
   console.log('\nshutting down');
@@ -59,3 +52,5 @@ process.on('SIGINT', () => {
 
   uw.disconnect();
 });
+
+uw.auth.login(credentials.email, credentials.password).then(() => uw.connect());
