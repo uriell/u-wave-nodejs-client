@@ -19,12 +19,6 @@ export default class Auth {
       .then((res) => res.data);
   }
 
-  public getSocketToken() {
-    return this.uw
-      .get<{}, uWaveAPI.SocketTokenResponse>('/auth/socket')
-      .then((res) => res.data.socketToken);
-  }
-
   public login(email: string, password: string) {
     return this.uw
       .post<uWaveAPI.LoginBody, uWaveAPI.LoginResponse>('/auth/login', {
@@ -42,5 +36,11 @@ export default class Auth {
     return this.uw
       .delete<{}, uWaveAPI.LogoutResponse>('/auth')
       .then(() => null);
+  }
+
+  public getSocketToken() {
+    return this.uw
+      .get<{}, uWaveAPI.SocketTokenResponse>('/auth/socket')
+      .then((res) => res.data.socketToken);
   }
 }
