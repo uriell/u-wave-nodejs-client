@@ -3,18 +3,28 @@ import { uWave } from 'u-wave-nodejs-client';
 
 dotEnv.config();
 
+const credentials = {
+  email: process.env.U_WAVE_EMAIL || '',
+  password: process.env.U_WAVE_PASSWORD || '',
+};
+
 const uw = new uWave({
-  authImmediately: true,
+  authImmediately: false,
   apiBaseUrl: process.env.API_BASE_URL || '',
   wsConnectionString: process.env.WEBSOCKET_CONNECTION_STRING || '',
-  credentials: {
-    email: process.env.U_WAVE_EMAIL || '',
-    password: process.env.U_WAVE_PASSWORD || '',
-  },
+  // credentials,
 });
+
+let isShuttingDown = false;
 
 uw.on('disconnected', () => {
   console.info('disconnected');
+
+  if (isShuttingDown) return;
+
+  // implement retry
+
+  uw.connect();
 });
 
 uw.on('error', (err) => {
@@ -27,6 +37,25 @@ uw.on('login', () => {
 
 uw.on('connected', () => {
   console.info('connected');
+});
 
-  uw.sendChat('hello world');
+let counter = 0;
+
+uw.on('authenticated', () => {
+  console.info('authenticated');
+
+  uw.sendChat('hello world ' + counter);
+  counter++;
+
+  uw.getSocketToken().then(console.log);
+});
+
+uw.login(credentials.email, credentials.password).then(() => uw.connect());
+
+process.on('SIGINT', () => {
+  console.log('\nshutting down');
+
+  isShuttingDown = true;
+
+  uw.disconnect();
 });

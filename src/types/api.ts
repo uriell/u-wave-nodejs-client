@@ -14,4 +14,10 @@ export declare namespace uWaveAPI {
     links: {};
     data: User;
   };
+
+  type SocketTokenResponse = {
+    meta: { url: string };
+    links: { self: string };
+    data: { socketToken: string };
+  };
 }

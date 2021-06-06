@@ -1,8 +1,9 @@
 import * as WebSocket from 'ws';
 import { EventEmitter } from 'events';
+import fetch, { RequestInit } from 'node-fetch';
 
-import { login } from './actions';
 import { Commands, SocketEvents, SocketPayloadsMap } from './types';
+import Auth from './modules/auth';
 
 export interface IUWaveOptions {
   authImmediately?: boolean;
@@ -21,6 +22,11 @@ export class uWave {
   private emitter: EventEmitter;
   public options: IUWaveOptions;
 
+  // #region modules
+  private modules: {
+    auth?: Auth;
+  } = {};
+
   static KEEP_ALIVE_MESSAGE = '-';
 
   constructor(options: IUWaveOptions) {
@@ -35,32 +41,77 @@ export class uWave {
       const credentials = options.credentials;
       delete this.options.credentials;
 
-      this.login(credentials.email, credentials.password).then(() =>
-        this.connect()
-      );
+      this.auth
+        .login(credentials.email, credentials.password)
+        .then(() => this.connect());
     }
   }
 
+  get auth() {
+    return this.modules.auth || (this.modules.auth = new Auth(this));
+  }
+
+  public sendChat(message: string) {
+    return this.send({ command: 'sendChat', data: message });
+  }
+
+  public vote(direction: 1 | -1) {
+    return this.send({ command: 'vote', data: direction });
+  }
+
+  // #region http
+  public request<I extends {}, R extends {}>(
+    method: 'get' | 'post' | 'put' | 'patch' | 'delete',
+    endpoint: string,
+    data?: I
+  ): Promise<R> {
+    const fetchOptions: RequestInit = { method };
+    fetchOptions.headers = {};
+
+    if (this.jwt) {
+      fetchOptions.headers.Authorization = `JWT ${this.jwt}`;
+    }
+
+    let url = process.env.UWAVE_API_BASE_URL + endpoint;
+
+    if (method === 'get' && data) {
+      const querystring = querystringify(data);
+
+      if (querystring) {
+        url += `?${querystring}`;
+      }
+    } else if (data) {
+      fetchOptions.headers['Content-Type'] = 'application/json';
+      fetchOptions.body = JSON.stringify(data);
+    }
+
+    return fetch(url, fetchOptions).then((res) => res.json());
+  }
+
+  public get<I, R>(endpoint: string, query?: I) {
+    return this.request<I, R>('get', endpoint, query);
+  }
+
+  public post<I, R>(endpoint: string, data?: I) {
+    return this.request<I, R>('post', endpoint, data);
+  }
+
+  public put<I, R>(endpoint: string, data?: I) {
+    return this.request<I, R>('put', endpoint, data);
+  }
+
+  public patch<I, R>(endpoint: string, data?: I) {
+    return this.request<I, R>('patch', endpoint, data);
+  }
+
+  public delete<I extends {}, R>(endpoint: string, query?: I) {
+    return this.request<I, R>('delete', endpoint, query);
+  }
+  // #endregion
+
+  // #region socket
   public get isConnected() {
     return this.socket?.readyState === WebSocket.OPEN;
-  }
-
-  public login(email: string, password: string) {
-    return login(email, password).then((res) => {
-      this.jwt = res.meta.jwt;
-      this.socketToken = res.meta.socketToken;
-
-      this.jwt;
-      this.socketToken;
-
-      this.emit('login');
-
-      return res.data;
-    });
-  }
-
-  public connect() {
-    return this.connectSocket(this.options.wsConnectionString);
   }
 
   public once<E extends Commands>(
@@ -84,25 +135,14 @@ export class uWave {
     return this.emitter.off(eventName, listener);
   }
 
-  public sendChat(message: string) {
-    return this.send({ command: 'sendChat', data: message });
+  public connect() {
+    return this.connectSocket(this.options.wsConnectionString);
   }
 
-  public vote(direction: 1 | -1) {
-    return this.send({ command: 'vote', data: direction });
-  }
-
-  public logout() {
-    // cleanup
-    this.emitter.removeAllListeners();
-
+  public disconnect() {
     if (this.socket) {
-      this.socket?.removeAllListeners();
+      this.socket.close();
     }
-
-    this.send({ command: 'logout' });
-
-    this.socket?.close();
   }
 
   private connectSocket(connectionString: string) {
@@ -114,22 +154,35 @@ export class uWave {
     this.socket.onmessage = this.onSocketMessage.bind(this);
   }
 
-  private onSocketOpen(/* event: WebSocket.OpenEvent */) {
+  private async onSocketOpen(/* event: WebSocket.OpenEvent */) {
     this.emit('connected');
 
-    if (this.socketToken && this.socket && this.isConnected) {
+    if (!this.socket || !this.isConnected) return;
+
+    if (!this.socketToken && this.jwt) {
+      const res = await this.auth.getSocketToken();
+
+      this.socketToken = res.data.socketToken;
+    }
+
+    if (this.socketToken) {
       this.socket.send(this.socketToken);
+
+      // the token is expired after being validated
+      delete this.socketToken;
     }
   }
 
   private onSocketClose(event: WebSocket.CloseEvent) {
+    event.target.removeAllListeners();
+    event.target.terminate();
+    delete this.socket;
+
     this.emit('disconnected');
-    console.log('closed', event);
   }
 
-  private onSocketError(event: WebSocket.ErrorEvent) {
+  private onSocketError(/* event: WebSocket.ErrorEvent */) {
     this.emit('error');
-    console.log('error', event);
   }
 
   private onSocketMessage(event: WebSocket.MessageEvent) {
@@ -161,4 +214,10 @@ export class uWave {
 
     return this.socket.send(JSON.stringify(message));
   }
+  // #endregion
 }
+
+const querystringify = (obj: object = {}) =>
+  Object.entries(obj)
+    .map((pair) => pair.map(encodeURIComponent).join('='))
+    .join('&');
