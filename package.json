@@ -1,6 +1,6 @@
 {
   "name": "u-wave-nodejs-client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "a wip barebones node.js client for u-wave",
   "main": "lib/index.js",
   "repository": "git@github.com:uriell/u-wave-nodejs-client.git",
