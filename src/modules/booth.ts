@@ -68,4 +68,11 @@ export default class Booth {
       )
       .then(() => null);
   }
+
+  public favorite(playlistId: string, historyId: string) {
+    return this.uw.put<uWaveAPI.FavoriteBody, uWaveAPI.FavoriteResponse>(
+      `/booth/favorite`,
+      { playlistId, historyId }
+    );
+  }
 }
