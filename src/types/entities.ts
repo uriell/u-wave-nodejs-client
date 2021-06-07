@@ -9,8 +9,8 @@ export type Media = {
   sourceType: 'youtube' | 'soundcloud';
   sourceID: number | string;
   sourceData: SourceData;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type Playback = {
@@ -32,7 +32,20 @@ export type User = {
   language: string;
   exiled: boolean;
   activePlaylist?: string;
-  lastSeenAt: string;
-  createdAt: string;
-  updatedAT: string;
+  lastSeenAt: Date;
+  createdAt: Date;
+  updatedAT: Date;
+};
+
+export type Booth = {
+  historyID: string;
+  playlistID: string;
+  userID: string;
+  playedAt: Date;
+  media: Playback;
+  stats: {
+    upvotes: number;
+    downvotes: number;
+    favorites: number;
+  };
 };
