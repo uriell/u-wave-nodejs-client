@@ -3,16 +3,16 @@ import { EventEmitter } from 'events';
 import fetch, { RequestInit } from 'node-fetch';
 
 import { Commands, SocketEvents, SocketPayloadsMap } from './types';
-import Auth from './modules/auth';
+import { Auth, Booth } from './modules';
 
 export interface IUWaveOptions {
+  apiBaseUrl: string;
+  wsConnectionString: string;
   authImmediately?: boolean;
   credentials?: {
     email: string;
     password: string;
   };
-  apiBaseUrl: string;
-  wsConnectionString: string;
 }
 
 export class uWave {
@@ -25,6 +25,7 @@ export class uWave {
   // #region modules
   private modules: {
     auth?: Auth;
+    booth?: Booth;
   } = {};
   // #endregion
 
@@ -56,6 +57,10 @@ export class uWave {
         this.socketToken = socketToken;
       }))
     );
+  }
+
+  get booth() {
+    return this.modules.booth || (this.modules.booth = new Booth(this));
   }
 
   public sendChat(message: string) {
