@@ -37,7 +37,7 @@ export type User = {
   updatedAT: Date;
 };
 
-export type Booth = {
+export type HistoryEntry = {
   historyID: string;
   playlistID: string;
   userID: string;

@@ -2,7 +2,8 @@ import { uWave } from '..';
 
 import { parseDates } from '../helpers';
 import { uWaveAPI } from '../types';
-import type { Booth as BoothEntity } from '../types/entities';
+import Auth from './auth';
+import type { HistoryEntry, Media, User } from '../types/entities';
 
 export default class Booth {
   private uw: uWave;
@@ -17,11 +18,34 @@ export default class Booth {
       .then((response) => {
         if (!response.data) return null;
 
-        return parseDates<BoothEntity>(response.data, [
+        return parseDates<HistoryEntry>(response.data, [
           'playedAt',
           'media.media.createdAt',
           'media.media.updatedAt',
         ]);
+      });
+  }
+
+  public getHistory(media?: string, offset?: number, limit?: number) {
+    return this.uw
+      .get<uWaveAPI.HistoryQuery, uWaveAPI.HistoryResponse>('/booth/history', {
+        filter: { media },
+        page: { offset, limit },
+      })
+      .then((response) => {
+        response.data = response.data.map((historyEntry) =>
+          parseDates<uWaveAPI.HistoryListEntry>(historyEntry, ['playedAt'])
+        );
+
+        response.included.media = response.included.media.map((media) =>
+          parseDates<Media>(media, ['createdAt', 'updatedAt'])
+        );
+
+        response.included.user = response.included.user.map((user) =>
+          parseDates<User>(user, Auth.USER_DATE_FIELDS)
+        );
+
+        return response;
       });
   }
 }
