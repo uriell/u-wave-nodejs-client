@@ -79,7 +79,7 @@ export declare namespace uWaveAPI {
 
   type VoteResponse = ItemResponse;
 
-  type FavoriteBody = { playlistId: string; historyId: string };
+  type FavoriteBody = { playlistID: string; historyID: string };
 
   type FavoriteResponse = ListResponse<
     Playback & { media: string },
@@ -87,4 +87,10 @@ export declare namespace uWaveAPI {
     { media: Media[] },
     { playlistSize: number }
   >;
+
+  type SkipBody =
+    | { userID: string; reason: string; remove?: boolean }
+    | { remove?: boolean };
+
+  type SkipResponse = ItemResponse;
 }
