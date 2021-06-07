@@ -64,4 +64,6 @@ export declare namespace uWaveAPI {
     { media: ['media.media']; user: ['user'] },
     { media: Media[]; user: User[] }
   >;
+
+  type CurrentVoteResponse = ItemResponse<0 | 1 | -1>;
 }
