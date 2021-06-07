@@ -78,4 +78,13 @@ export declare namespace uWaveAPI {
   };
 
   type VoteResponse = ItemResponse;
+
+  type FavoriteBody = { playlistId: string; historyId: string };
+
+  type FavoriteResponse = ListResponse<
+    Playback & { media: string },
+    { media: ['media'] },
+    { media: Media[] },
+    { playlistSize: number }
+  >;
 }
