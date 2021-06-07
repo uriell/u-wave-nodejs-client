@@ -1,4 +1,5 @@
 import { uWave } from '..';
+import { parseDates } from '../helpers';
 import { uWaveAPI } from '../types';
 
 type AuthCallback = (jwt: string, socketToken: string) => void;
@@ -6,6 +7,8 @@ type AuthCallback = (jwt: string, socketToken: string) => void;
 export default class Auth {
   private uw: uWave;
   private onAuthenticated: AuthCallback;
+
+  static USER_DATE_FIELDS = ['lastSeenAt', 'createdAt', 'updatedAt'];
 
   constructor(uw: uWave, onAuthenticated: AuthCallback) {
     this.uw = uw;
@@ -16,7 +19,11 @@ export default class Auth {
   public getCurrentUser() {
     return this.uw
       .get<{}, uWaveAPI.CurrentUserResponse>('/auth')
-      .then((res) => res.data);
+      .then((response) => {
+        if (!response.data) return null;
+
+        return parseDates(response.data, Auth.USER_DATE_FIELDS);
+      });
   }
 
   public getSocketToken() {
@@ -34,7 +41,7 @@ export default class Auth {
       .then((response) => {
         this.onAuthenticated(response.meta.jwt, response.meta.socketToken);
 
-        return response.data;
+        return parseDates(response.data, Auth.USER_DATE_FIELDS);
       });
   }
 
