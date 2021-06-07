@@ -69,10 +69,20 @@ export default class Booth {
       .then(() => null);
   }
 
-  public favorite(playlistId: string, historyId: string) {
-    return this.uw.put<uWaveAPI.FavoriteBody, uWaveAPI.FavoriteResponse>(
-      `/booth/favorite`,
-      { playlistId, historyId }
+  public favorite(playlistID: string, historyID: string) {
+    return this.uw.post<uWaveAPI.FavoriteBody, uWaveAPI.FavoriteResponse>(
+      '/booth/favorite',
+      { playlistID, historyID }
     );
+  }
+
+  public skip(userID: string, reason: string, remove: boolean) {
+    return this.uw
+      .post<uWaveAPI.SkipBody, uWaveAPI.SkipResponse>('/booth/skip', {
+        userID,
+        reason,
+        remove,
+      })
+      .then(() => null);
   }
 }
