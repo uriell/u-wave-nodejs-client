@@ -53,7 +53,4 @@ process.on('SIGINT', () => {
   uw.disconnect();
 });
 
-uw.auth.login(credentials.email, credentials.password).then((user) => {
-  console.log(user);
-  uw.connect();
-});
+uw.auth.login(credentials.email, credentials.password).then(() => uw.connect());

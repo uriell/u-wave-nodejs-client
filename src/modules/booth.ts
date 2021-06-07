@@ -62,7 +62,7 @@ export default class Booth {
     direction: VOTE_DIRECTIONS.UPVOTE | VOTE_DIRECTIONS.DOWNVOTE
   ) {
     return this.uw
-      .put<uWaveAPI.VoteBody, uWaveAPI.VoteResponse>(
+      .put<uWaveAPI.VoteBody, uWaveAPI.EmptyItemResponse>(
         `/booth/${historyId}/vote`,
         { direction }
       )
@@ -76,13 +76,26 @@ export default class Booth {
     );
   }
 
-  public skip(userID: string, reason: string, remove: boolean) {
+  public skip(remove?: boolean): Promise<null>;
+  public skip(remove: boolean, userID: string, reason: string): Promise<null>;
+  public skip(remove?: boolean, userID?: string, reason?: string) {
     return this.uw
-      .post<uWaveAPI.SkipBody, uWaveAPI.SkipResponse>('/booth/skip', {
+      .post<uWaveAPI.SkipBody, uWaveAPI.EmptyItemResponse>('/booth/skip', {
         userID,
         reason,
         remove,
       })
+      .then(() => null);
+  }
+
+  public replaceBooth(userID: string) {
+    return this.uw
+      .post<uWaveAPI.ReplaceBoothBody, uWaveAPI.EmptyItemResponse>(
+        '/booth/skip',
+        {
+          userID,
+        }
+      )
       .then(() => null);
   }
 }

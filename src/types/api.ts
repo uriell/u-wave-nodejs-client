@@ -47,7 +47,7 @@ export declare namespace uWaveAPI {
     }
   >;
 
-  type LogoutResponse = ItemResponse;
+  type EmptyItemResponse = ItemResponse;
 
   type SocketTokenResponse = ItemResponse<{ socketToken: string }>;
 
@@ -77,8 +77,6 @@ export declare namespace uWaveAPI {
     direction: VOTE_DIRECTIONS.UPVOTE | VOTE_DIRECTIONS.DOWNVOTE;
   };
 
-  type VoteResponse = ItemResponse;
-
   type FavoriteBody = { playlistID: string; historyID: string };
 
   type FavoriteResponse = ListResponse<
@@ -92,5 +90,5 @@ export declare namespace uWaveAPI {
     | { userID: string; reason: string; remove?: boolean }
     | { remove?: boolean };
 
-  type SkipResponse = ItemResponse;
+  type ReplaceBoothBody = { userID: string };
 }
