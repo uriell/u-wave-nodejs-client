@@ -1,4 +1,10 @@
-import { HistoryEntry, Media, Playback, User } from './entities';
+import {
+  HistoryEntry,
+  Media,
+  Playback,
+  User,
+  VOTE_DIRECTIONS,
+} from './entities';
 
 type ItemResponse<Data = {}, Meta = {}> = {
   meta: Meta;
@@ -65,5 +71,11 @@ export declare namespace uWaveAPI {
     { media: Media[]; user: User[] }
   >;
 
-  type CurrentVoteResponse = ItemResponse<0 | 1 | -1>;
+  type CurrentVoteResponse = ItemResponse<VOTE_DIRECTIONS>;
+
+  type VoteBody = {
+    direction: VOTE_DIRECTIONS.UPVOTE | VOTE_DIRECTIONS.DOWNVOTE;
+  };
+
+  type VoteResponse = ItemResponse;
 }

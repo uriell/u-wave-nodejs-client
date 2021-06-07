@@ -49,3 +49,9 @@ export type HistoryEntry = {
     favorites: number;
   };
 };
+
+export enum VOTE_DIRECTIONS {
+  UPVOTE = 1,
+  DIDNT_VOTE = 0,
+  DOWNVOTE = -1,
+}
