@@ -1,46 +1,27 @@
 import { uWave } from '..';
+
+import { parseDates } from '../helpers';
 import { uWaveAPI } from '../types';
+import type { Booth as BoothEntity } from '../types/entities';
 
-type AuthCallback = (jwt: string, socketToken: string) => void;
-
-export default class Auth {
+export default class Booth {
   private uw: uWave;
-  private onAuthenticated: AuthCallback;
 
-  constructor(uw: uWave, onAuthenticated: AuthCallback) {
+  constructor(uw: uWave) {
     this.uw = uw;
-
-    this.onAuthenticated = onAuthenticated;
   }
 
-  public getCurrentUser() {
+  public getBooth() {
     return this.uw
-      .get<{}, uWaveAPI.CurrentUserResponse>('/auth')
-      .then((res) => res.data);
-  }
-
-  public login(email: string, password: string) {
-    return this.uw
-      .post<uWaveAPI.LoginBody, uWaveAPI.LoginResponse>('/auth/login', {
-        email,
-        password,
-      })
+      .get<{}, uWaveAPI.BoothResponse>('/booth')
       .then((response) => {
-        this.onAuthenticated(response.meta.jwt, response.meta.socketToken);
+        if (!response.data) return null;
 
-        return response.data;
+        return parseDates<BoothEntity>(response.data, [
+          'playedAt',
+          'media.media.createdAt',
+          'media.media.updatedAt',
+        ]);
       });
-  }
-
-  public logout() {
-    return this.uw
-      .delete<{}, uWaveAPI.LogoutResponse>('/auth')
-      .then(() => null);
-  }
-
-  public getSocketToken() {
-    return this.uw
-      .get<{}, uWaveAPI.SocketTokenResponse>('/auth/socket')
-      .then((res) => res.data.socketToken);
   }
 }
