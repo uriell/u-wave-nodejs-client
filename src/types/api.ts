@@ -1,4 +1,4 @@
-import { User } from './entities';
+import { Booth, User } from './entities';
 
 type ItemResponse<D = {}, M = {}> = {
   meta: M;
@@ -25,4 +25,6 @@ export declare namespace uWaveAPI {
   type SocketTokenResponse = ItemResponse<{ socketToken: string }>;
 
   type CurrentUserResponse = ItemResponse<User | null>;
+
+  type BoothResponse = ItemResponse<Booth | null>;
 }
