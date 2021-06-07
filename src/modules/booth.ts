@@ -48,4 +48,10 @@ export default class Booth {
         return response;
       });
   }
+
+  public getVote(historyId: string) {
+    return this.uw
+      .get<{}, uWaveAPI.CurrentVoteResponse>(`/booth/${historyId}/vote`)
+      .then((res) => res.data);
+  }
 }
