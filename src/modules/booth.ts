@@ -3,7 +3,13 @@ import { uWave } from '..';
 import { parseDates } from '../helpers';
 import { uWaveAPI } from '../types';
 import Auth from './auth';
-import { HistoryEntry, Media, User, VOTE_DIRECTIONS } from '../types/entities';
+import {
+  HistoryEntry,
+  Media,
+  Playback,
+  User,
+  VOTE_DIRECTIONS,
+} from '../types/entities';
 
 export default class Booth {
   private uw: uWave;
@@ -70,10 +76,19 @@ export default class Booth {
   }
 
   public favorite(playlistID: string, historyID: string) {
-    return this.uw.post<uWaveAPI.FavoriteBody, uWaveAPI.FavoriteResponse>(
-      '/booth/favorite',
-      { playlistID, historyID }
-    );
+    return this.uw
+      .post<uWaveAPI.FavoriteBody, uWaveAPI.FavoriteResponse>(
+        '/booth/favorite',
+        { playlistID, historyID }
+      )
+      .then((response) => {
+        const playlistItem: Playback = {
+          ...response.data[0],
+          media: response.included.media[0],
+        };
+
+        return { item: playlistItem, playlistSize: response.meta.playlistSize };
+      });
   }
 
   public skip(remove?: boolean): Promise<null>;
