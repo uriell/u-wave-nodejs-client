@@ -47,7 +47,7 @@ export default class Auth {
 
   public logout() {
     return this.uw
-      .delete<{}, uWaveAPI.LogoutResponse>('/auth')
+      .delete<{}, uWaveAPI.EmptyItemResponse>('/auth')
       .then(() => null);
   }
 }
