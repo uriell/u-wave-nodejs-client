@@ -3,13 +3,8 @@ import { uWave } from '..';
 import { groupById, parseDates, setPathValue } from '../helpers';
 import { uWaveAPI } from '../types';
 import Auth from './auth';
-import {
-  HistoryEntry,
-  Media,
-  Playback,
-  User,
-  VOTE_DIRECTIONS,
-} from '../types/entities';
+import { HistoryEntry, Playback, VOTE_DIRECTIONS } from '../types/entities';
+import { PaginatedHistoryEntries } from '../types/domain';
 
 export default class Booth {
   private uw: uWave;
@@ -38,7 +33,11 @@ export default class Booth {
       });
   }
 
-  public getHistory(media?: string, offset?: number, limit?: number) {
+  public getHistory(
+    media?: string,
+    offset?: number,
+    limit?: number
+  ): Promise<PaginatedHistoryEntries> {
     const queryOptions: uWaveAPI.HistoryQuery = {};
 
     if (media) queryOptions.filter = { media };
