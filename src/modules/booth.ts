@@ -1,6 +1,6 @@
 import { uWave } from '..';
 
-import { parseDates } from '../helpers';
+import { groupById, parseDates, setPathValue } from '../helpers';
 import { uWaveAPI } from '../types';
 import Auth from './auth';
 import {
@@ -35,25 +35,63 @@ export default class Booth {
   }
 
   public getHistory(media?: string, offset?: number, limit?: number) {
+    const queryOptions: uWaveAPI.HistoryQuery = {};
+
+    if (media) queryOptions.filter = { media };
+    if (offset || limit) queryOptions.page = { offset, limit };
+
     return this.uw
-      .get<uWaveAPI.HistoryQuery, uWaveAPI.HistoryResponse>('/booth/history', {
-        filter: { media },
-        page: { offset, limit },
-      })
+      .get<uWaveAPI.HistoryQuery, uWaveAPI.HistoryResponse>(
+        '/booth/history',
+        queryOptions
+      )
       .then((response) => {
-        response.data = response.data.map((historyEntry) =>
-          parseDates<uWaveAPI.HistoryListEntry>(historyEntry, ['playedAt'])
+        const includedMedia = groupById(response.included.media);
+        const includedUsers = groupById(response.included.user);
+
+        const historyEntries = response.data.map((historyEntry) => {
+          (historyEntry as HistoryEntry).user =
+            includedUsers[historyEntry.user];
+          (historyEntry as HistoryEntry).media.media =
+            includedMedia[historyEntry.media.media];
+
+          return parseDates<uWaveAPI.HistoryListEntry>(historyEntry, [
+            'playedAt',
+            'media.media.createdAt',
+            'media.media.updatedAt',
+            ...Auth.USER_DATE_FIELDS.map((field) => `user.${field}`),
+          ]);
+        });
+
+        const prevQueryOptions: uWaveAPI.HistoryQuery = parseQs(
+          response.links.prev.split('?')[1]
+        );
+        const nextQueryOptions: uWaveAPI.HistoryQuery = parseQs(
+          response.links.next.split('?')[1]
         );
 
-        response.included.media = response.included.media.map((media) =>
-          parseDates<Media>(media, ['createdAt', 'updatedAt'])
-        );
+        const pagination = {
+          ...response.meta,
+          included: undefined,
 
-        response.included.user = response.included.user.map((user) =>
-          parseDates<User>(user, Auth.USER_DATE_FIELDS)
-        );
+          getPrevPage: () =>
+            this.getHistory(
+              media,
+              prevQueryOptions.page?.offset,
+              prevQueryOptions.page?.limit
+            ),
+          getCurrentPage: () => this.getHistory(media, offset, limit),
+          getNextPage: () =>
+            this.getHistory(
+              media,
+              nextQueryOptions.page?.offset,
+              nextQueryOptions.page?.offset
+            ),
+        };
 
-        return response;
+        delete pagination.included;
+
+        return { historyEntries, pagination };
       });
   }
 
@@ -114,3 +152,17 @@ export default class Booth {
       .then(() => null);
   }
 }
+
+const parseQs = (querystring: string) => {
+  const chunks = decodeURIComponent(querystring).split('&');
+  const queryOptions = {};
+
+  for (const chunk of chunks) {
+    const [key, value] = chunk.split('=');
+    const keyPath = key.split(/\[|\]/g).filter(Boolean);
+
+    setPathValue(queryOptions, keyPath, value);
+  }
+
+  return queryOptions;
+};
