@@ -40,7 +40,7 @@ export type User = {
 export type HistoryEntry = {
   historyID: string;
   playlistID: string;
-  userID: string;
+  user: User;
   playedAt: Date;
   media: Playback;
   stats: {
