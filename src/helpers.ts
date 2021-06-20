@@ -27,7 +27,7 @@ function getPathValue<I extends Record<string, any>, R>(
   return getPathValue(value, path);
 }
 
-function setPathValue(
+export function setPathValue(
   obj: { [key: string]: any },
   path: string[],
   value: any
@@ -41,5 +41,15 @@ function setPathValue(
 
   path.shift();
 
+  if (!obj[subPath]) {
+    obj[subPath] = {};
+  }
+
   return setPathValue(obj[subPath], path, value);
+}
+
+export function groupById<I extends { _id: string }>(
+  arr: I[]
+): Record<string, I> {
+  return arr.reduce((acc, item) => ({ ...acc, [item._id]: item }), {});
 }
