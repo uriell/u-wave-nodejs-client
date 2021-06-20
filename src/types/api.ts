@@ -21,7 +21,7 @@ type ListResponse<
   included: IncludedExtractionResults;
 };
 
-type PaginatedMeta = {
+export type PaginatedMeta = {
   offset: number;
   pageSize: number;
   results: number;
