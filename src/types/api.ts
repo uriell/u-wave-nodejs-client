@@ -55,10 +55,9 @@ export declare namespace uWaveAPI {
 
   type BoothResponse = ItemResponse<HistoryEntry | null>;
 
-  type HistoryQuery = { filter?: { media?: string } } & (
-    | { page?: number; limit?: number }
-    | { page: { offset?: number; limit?: number } }
-  );
+  type HistoryQuery = { filter?: { media?: string } } & {
+    page?: { offset?: number; limit?: number };
+  };
 
   type HistoryListEntry = HistoryEntry & {
     media: Playback & { media: string };
