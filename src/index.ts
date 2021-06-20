@@ -227,7 +227,13 @@ export class uWave {
   // #endregion
 }
 
-const querystringify = (obj: object = {}) =>
+const querystringify = (obj: object = {}, keyPrefix?: string): string =>
   Object.entries(obj)
-    .map((pair) => pair.map(encodeURIComponent).join('='))
+    .map(([key, value]) =>
+      typeof value !== 'object'
+        ? [keyPrefix ? `${keyPrefix}[${key}]` : key, value]
+            .map(encodeURIComponent)
+            .join('=')
+        : querystringify(value, key)
+    )
     .join('&');
