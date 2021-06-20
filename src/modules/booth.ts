@@ -15,6 +15,11 @@ export default class Booth {
   private uw: uWave;
 
   static VOTE_DIRECTIONS = VOTE_DIRECTIONS;
+  static HISTORY_ENTRY_DATE_FIELDS = [
+    'playedAt',
+    'media.media.createdAt',
+    'media.media.updatedAt',
+  ];
 
   constructor(uw: uWave) {
     this.uw = uw;
@@ -26,11 +31,10 @@ export default class Booth {
       .then((response) => {
         if (!response.data) return null;
 
-        return parseDates<HistoryEntry>(response.data, [
-          'playedAt',
-          'media.media.createdAt',
-          'media.media.updatedAt',
-        ]);
+        return parseDates<HistoryEntry>(
+          response.data,
+          Booth.HISTORY_ENTRY_DATE_FIELDS
+        );
       });
   }
 
@@ -56,9 +60,7 @@ export default class Booth {
             includedMedia[historyEntry.media.media];
 
           return parseDates<uWaveAPI.HistoryListEntry>(historyEntry, [
-            'playedAt',
-            'media.media.createdAt',
-            'media.media.updatedAt',
+            ...Booth.HISTORY_ENTRY_DATE_FIELDS,
             ...Auth.USER_DATE_FIELDS.map((field) => `user.${field}`),
           ]);
         });
