@@ -13,18 +13,22 @@
     "format:all": "npm run prettier -- --check \"src/**/*.ts\"",
     "format": "prettier",
     "prepare": "npm run build",
-    "release": "np --no-yarn --no-tests"
+    "release": "np --no-yarn",
+    "test": "jest"
   },
   "dependencies": {
     "node-fetch": "2.6.1",
-    "ws": "7.4.3"
+    "ws": "7.5.0"
   },
   "devDependencies": {
+    "@types/jest": "26.0.23",
     "@types/node": "14.14.28",
     "@types/node-fetch": "2.5.8",
     "@types/ws": "7.4.0",
+    "jest": "27.0.4",
     "np": "7.5.0",
     "prettier": "2.2.1",
+    "ts-jest": "27.0.3",
     "typescript": "4.1.5"
   }
 }
