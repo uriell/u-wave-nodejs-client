@@ -12,8 +12,8 @@ export interface IUWaveOptions {
   };
 }
 
-export type PrivateTokenRef = { token?: string };
-let privateTokenRef: PrivateTokenRef = {};
+export type PrivateSocketTokenRef = { token?: string };
+let privateSocketTokenRef: PrivateSocketTokenRef = {};
 
 export class uWave {
   private jwt?: string;
@@ -49,7 +49,7 @@ export class uWave {
       this.modules.auth ||
       (this.modules.auth = new Auth(this, (jwt, socketToken) => {
         this.jwt = jwt;
-        privateTokenRef.token = socketToken;
+        privateSocketTokenRef.token = socketToken;
       }))
     );
   }
@@ -57,7 +57,7 @@ export class uWave {
   get socket() {
     return (
       this.modules.socket ||
-      (this.modules.socket = new Socket(this, privateTokenRef))
+      (this.modules.socket = new Socket(this, privateSocketTokenRef))
     );
   }
 

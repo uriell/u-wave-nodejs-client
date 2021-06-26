@@ -1,10 +1,10 @@
 import * as WebSocket from 'ws';
 import { EventEmitter } from 'events';
 
-import { PrivateTokenRef, uWave } from '..';
+import { PrivateSocketTokenRef, uWave } from '..';
 import { Commands, SocketEvents, SocketPayloadsMap } from '../types';
 
-let privateTokenRef: PrivateTokenRef = {};
+let privateSocketTokenRef: PrivateSocketTokenRef = {};
 
 export default class Socket {
   private uw: uWave;
@@ -14,11 +14,11 @@ export default class Socket {
 
   static KEEP_ALIVE_MESSAGE = '-';
 
-  constructor(uw: uWave, tokenRef: PrivateTokenRef) {
+  constructor(uw: uWave, tokenRef: PrivateSocketTokenRef) {
     this.uw = uw;
     this.emitter = new EventEmitter();
 
-    privateTokenRef.token = tokenRef.token;
+    privateSocketTokenRef.token = tokenRef.token;
   }
 
   public get isConnected() {
@@ -80,15 +80,15 @@ export default class Socket {
 
     if (!this.socket || !this.isConnected) return;
 
-    if (!privateTokenRef.token && this.uw.isAuthenticated) {
-      privateTokenRef.token = await this.uw.auth.getSocketToken();
+    if (!privateSocketTokenRef.token && this.uw.isAuthenticated) {
+      privateSocketTokenRef.token = await this.uw.auth.getSocketToken();
     }
 
-    if (privateTokenRef.token) {
-      this.socket.send(privateTokenRef.token);
+    if (privateSocketTokenRef.token) {
+      this.socket.send(privateSocketTokenRef.token);
 
       // the token is expired after being validated
-      delete privateTokenRef.token;
+      delete privateSocketTokenRef.token;
     }
   }
 
