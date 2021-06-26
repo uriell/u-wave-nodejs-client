@@ -1,9 +1,6 @@
-import * as WebSocket from 'ws';
-import { EventEmitter } from 'events';
 import fetch, { RequestInit } from 'node-fetch';
 
-import { Commands, SocketEvents, SocketPayloadsMap } from './types';
-import { Auth, Booth } from './modules';
+import { Auth, Booth, Socket } from './modules';
 
 export interface IUWaveOptions {
   apiBaseUrl: string;
@@ -15,25 +12,23 @@ export interface IUWaveOptions {
   };
 }
 
+export type PrivateTokenRef = { token?: string };
+let privateTokenRef: PrivateTokenRef = {};
+
 export class uWave {
   private jwt?: string;
-  private socketToken?: string;
-  private socket?: WebSocket;
-  private emitter: EventEmitter;
   public options: IUWaveOptions;
 
   // #region modules
   private modules: {
     auth?: Auth;
     booth?: Booth;
+    socket?: Socket;
   } = {};
   // #endregion
 
-  static KEEP_ALIVE_MESSAGE = '-';
-
   constructor(options: IUWaveOptions) {
     this.options = options;
-    this.emitter = new EventEmitter();
 
     if (!process.env.UWAVE_API_BASE_URL) {
       process.env.UWAVE_API_BASE_URL = options.apiBaseUrl;
@@ -45,7 +40,7 @@ export class uWave {
 
       this.auth
         .login(credentials.email, credentials.password)
-        .then(() => this.connect());
+        .then(() => this.socket.connect());
     }
   }
 
@@ -54,8 +49,15 @@ export class uWave {
       this.modules.auth ||
       (this.modules.auth = new Auth(this, (jwt, socketToken) => {
         this.jwt = jwt;
-        this.socketToken = socketToken;
+        privateTokenRef.token = socketToken;
       }))
+    );
+  }
+
+  get socket() {
+    return (
+      this.modules.socket ||
+      (this.modules.socket = new Socket(this, privateTokenRef))
     );
   }
 
@@ -63,12 +65,16 @@ export class uWave {
     return this.modules.booth || (this.modules.booth = new Booth(this));
   }
 
+  get isAuthenticated() {
+    return !!this.jwt;
+  }
+
   public sendChat(message: string) {
-    return this.send({ command: 'sendChat', data: message });
+    return this.socket.send({ command: 'sendChat', data: message });
   }
 
   public vote(direction: 1 | -1) {
-    return this.send({ command: 'vote', data: direction });
+    return this.socket.send({ command: 'vote', data: direction });
   }
 
   // #region http
@@ -118,111 +124,6 @@ export class uWave {
 
   public delete<I extends {}, R>(endpoint: string, query?: I) {
     return this.request<I, R>('delete', endpoint, query);
-  }
-  // #endregion
-
-  // #region socket
-  public get isConnected() {
-    return this.socket?.readyState === WebSocket.OPEN;
-  }
-
-  public once<E extends Commands>(
-    eventName: E,
-    listener: (payload: SocketPayloadsMap[E]) => void
-  ) {
-    return this.emitter.on(eventName, listener);
-  }
-
-  public on<E extends Commands>(
-    eventName: E,
-    listener: (payload: SocketPayloadsMap[E]) => void
-  ) {
-    return this.emitter.on(eventName, listener);
-  }
-
-  public off<E extends Commands>(
-    eventName: E,
-    listener: (payload: SocketPayloadsMap[E]) => void
-  ) {
-    return this.emitter.off(eventName, listener);
-  }
-
-  public connect() {
-    return this.connectSocket(this.options.wsConnectionString);
-  }
-
-  public disconnect() {
-    if (this.socket) {
-      this.socket.close();
-    }
-  }
-
-  private connectSocket(connectionString: string) {
-    this.socket = new WebSocket(connectionString);
-
-    this.socket.onopen = this.onSocketOpen.bind(this);
-    this.socket.onclose = this.onSocketClose.bind(this);
-    this.socket.onerror = this.onSocketError.bind(this);
-    this.socket.onmessage = this.onSocketMessage.bind(this);
-  }
-
-  private async onSocketOpen(/* event: WebSocket.OpenEvent */) {
-    this.emit('connected');
-
-    if (!this.socket || !this.isConnected) return;
-
-    if (!this.socketToken && this.jwt) {
-      this.socketToken = await this.auth.getSocketToken();
-    }
-
-    if (this.socketToken) {
-      this.socket.send(this.socketToken);
-
-      // the token is expired after being validated
-      delete this.socketToken;
-    }
-  }
-
-  private onSocketClose(event: WebSocket.CloseEvent) {
-    event.target.removeAllListeners();
-    event.target.terminate();
-    delete this.socket;
-
-    this.emit('disconnected');
-  }
-
-  private onSocketError(/* event: WebSocket.ErrorEvent */) {
-    this.emit('error');
-  }
-
-  private onSocketMessage(event: WebSocket.MessageEvent) {
-    if (event.data === uWave.KEEP_ALIVE_MESSAGE) return;
-    if (typeof event.data !== 'string') return;
-
-    let payload: SocketEvents;
-
-    try {
-      payload = JSON.parse(event.data);
-    } catch (err) {
-      console.error(err);
-      return;
-    }
-
-    switch (payload.command) {
-      default:
-        this.emit(payload.command, payload.data);
-        break;
-    }
-  }
-
-  private emit<E extends Commands>(command: E, payload?: SocketPayloadsMap[E]) {
-    return this.emitter.emit(command, payload);
-  }
-
-  private send<I>(message: I) {
-    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) return;
-
-    return this.socket.send(JSON.stringify(message));
   }
   // #endregion
 }
