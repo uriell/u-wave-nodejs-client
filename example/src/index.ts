@@ -17,29 +17,29 @@ const uw = new uWave({
 
 let isShuttingDown = false;
 
-uw.on('disconnected', () => {
+uw.socket.on('disconnected', () => {
   console.info('disconnected');
 
   if (isShuttingDown) return;
 
   // implement retry
 
-  uw.connect();
+  uw.socket.connect();
 });
 
-uw.on('error', (err) => {
+uw.socket.on('error', (err) => {
   console.error('error', err);
 });
 
-uw.on('login', () => {
+uw.socket.on('login', () => {
   console.info('logged in');
 });
 
-uw.on('connected', () => {
+uw.socket.on('connected', () => {
   console.info('connected');
 });
 
-uw.on('authenticated', () => {
+uw.socket.on('authenticated', () => {
   console.info('authenticated');
 
   uw.sendChat('hello world');
@@ -50,7 +50,9 @@ process.on('SIGINT', () => {
 
   isShuttingDown = true;
 
-  uw.disconnect();
+  uw.socket.disconnect();
 });
 
-uw.auth.login(credentials.email, credentials.password).then(() => uw.connect());
+uw.auth
+  .login(credentials.email, credentials.password)
+  .then(() => uw.socket.connect());
