@@ -21,7 +21,6 @@ export default class Socket {
     privateTokenRef.token = tokenRef.token;
   }
 
-  // #region socket
   public get isConnected() {
     return this.socket?.readyState === WebSocket.OPEN;
   }
@@ -124,5 +123,4 @@ export default class Socket {
         break;
     }
   }
-  // #endregion
 }
