@@ -3,13 +3,13 @@ import { uWave } from '..';
 import { groupById, parseDates, setPathValue } from '../helpers';
 import { uWaveAPI } from '../types';
 import Auth from './auth';
-import { HistoryEntry, Playback, VOTE_DIRECTIONS } from '../types/entities';
+import { HistoryEntry, Playback, VoteDirections } from '../types/entities';
 import { PaginatedHistoryEntries } from '../types/domain';
 
 export default class Booth {
   private uw: uWave;
 
-  static VOTE_DIRECTIONS = VOTE_DIRECTIONS;
+  static VoteDirections = VoteDirections;
   static HISTORY_ENTRY_DATE_FIELDS = [
     'playedAt',
     'media.media.createdAt',
@@ -20,7 +20,7 @@ export default class Booth {
     this.uw = uw;
   }
 
-  public getBooth() {
+  public getBooth(): Promise<HistoryEntry | null> {
     return this.uw
       .get<{}, uWaveAPI.BoothResponse>('/booth')
       .then((response) => {
@@ -53,12 +53,14 @@ export default class Booth {
         const includedUsers = groupById(response.included.user);
 
         const historyEntries = response.data.map((historyEntry) => {
-          (historyEntry as HistoryEntry).user =
-            includedUsers[historyEntry.user];
-          (historyEntry as HistoryEntry).media.media =
-            includedMedia[historyEntry.media.media];
+          const newHistoryEntry = { ...historyEntry };
 
-          return parseDates<uWaveAPI.HistoryListEntry>(historyEntry, [
+          (newHistoryEntry as HistoryEntry).user =
+            includedUsers[newHistoryEntry.user];
+          (newHistoryEntry as HistoryEntry).media.media =
+            includedMedia[newHistoryEntry.media.media];
+
+          return parseDates<uWaveAPI.HistoryListEntry>(newHistoryEntry, [
             ...Booth.HISTORY_ENTRY_DATE_FIELDS,
             ...Auth.USER_DATE_FIELDS.map((field) => `user.${field}`),
           ]);
@@ -96,7 +98,7 @@ export default class Booth {
       });
   }
 
-  public getVote(historyId: string) {
+  public getVote(historyId: string): Promise<VoteDirections> {
     return this.uw
       .get<{}, uWaveAPI.CurrentVoteResponse>(`/booth/${historyId}/vote`)
       .then((res) => res.data);
@@ -104,8 +106,8 @@ export default class Booth {
 
   public vote(
     historyId: string,
-    direction: VOTE_DIRECTIONS.UPVOTE | VOTE_DIRECTIONS.DOWNVOTE
-  ) {
+    direction: VoteDirections.UPVOTE | VoteDirections.DOWNVOTE
+  ): Promise<null> {
     return this.uw
       .put<uWaveAPI.VoteBody, uWaveAPI.EmptyItemResponse>(
         `/booth/${historyId}/vote`,
@@ -114,7 +116,10 @@ export default class Booth {
       .then(() => null);
   }
 
-  public favorite(playlistID: string, historyID: string) {
+  public favorite(
+    playlistID: string,
+    historyID: string
+  ): Promise<{ item: Playback; playlistSize: number }> {
     return this.uw
       .post<uWaveAPI.FavoriteBody, uWaveAPI.FavoriteResponse>(
         '/booth/favorite',
@@ -132,7 +137,11 @@ export default class Booth {
 
   public skip(remove?: boolean): Promise<null>;
   public skip(remove: boolean, userID: string, reason: string): Promise<null>;
-  public skip(remove?: boolean, userID?: string, reason?: string) {
+  public skip(
+    remove?: boolean,
+    userID?: string,
+    reason?: string
+  ): Promise<null> {
     return this.uw
       .post<uWaveAPI.SkipBody, uWaveAPI.EmptyItemResponse>('/booth/skip', {
         userID,
@@ -142,7 +151,7 @@ export default class Booth {
       .then(() => null);
   }
 
-  public replaceBooth(userID: string) {
+  public replaceBooth(userID: string): Promise<null> {
     return this.uw
       .post<uWaveAPI.ReplaceBoothBody, uWaveAPI.EmptyItemResponse>(
         '/booth/skip',
@@ -158,12 +167,12 @@ const parseQs = (querystring: string) => {
   const chunks = decodeURIComponent(querystring).split('&');
   const queryOptions = {};
 
-  for (const chunk of chunks) {
+  chunks.forEach((chunk) => {
     const [key, value] = chunk.split('=');
     const keyPath = key.split(/\[|\]/g).filter(Boolean);
 
     setPathValue(queryOptions, keyPath, value);
-  }
+  });
 
   return queryOptions;
 };

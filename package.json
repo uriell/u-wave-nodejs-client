@@ -10,10 +10,12 @@
   "scripts": {
     "dev": "npm run build -- -w",
     "build": "tsc",
-    "format:all": "npm run prettier -- --check \"src/**/*.ts\"",
-    "format": "prettier",
     "prepare": "npm run build",
     "release": "np --no-yarn",
+    "format:all": "npm run format -- --check \"src/**/*.ts\"",
+    "format": "prettier",
+    "lint:all": "npm run lint -- \"src/**/*.ts\"",
+    "lint": "eslint",
     "test": "jest"
   },
   "dependencies": {
@@ -25,6 +27,13 @@
     "@types/node": "14.14.28",
     "@types/node-fetch": "2.5.8",
     "@types/ws": "7.4.0",
+    "@typescript-eslint/eslint-plugin": "4.28.0",
+    "@typescript-eslint/parser": "4.28.0",
+    "eslint": "7.29.0",
+    "eslint-config-airbnb-typescript": "12.3.1",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.23.4",
+    "eslint-plugin-jest": "24.3.6",
     "jest": "27.0.4",
     "np": "7.5.0",
     "prettier": "2.2.1",

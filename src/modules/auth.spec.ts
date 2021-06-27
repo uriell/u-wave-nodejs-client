@@ -2,7 +2,7 @@ import { uWave } from '..';
 import AuthModule from './auth';
 
 test('should create an auth module instance', () => {
-  const uw = {} as uWave;
+  const uw = new (class Test {})() as uWave;
   const onAuthenticated = jest.fn();
   const auth = new AuthModule(uw, onAuthenticated);
 
@@ -12,7 +12,7 @@ test('should create an auth module instance', () => {
   expect(auth).toMatchInlineSnapshot(`
 Auth {
   "onAuthenticated": [MockFunction],
-  "uw": Object {},
+  "uw": Test {},
 }
 `);
 });

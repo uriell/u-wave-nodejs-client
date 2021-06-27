@@ -13,8 +13,9 @@ export interface IUWaveOptions {
 }
 
 export type PrivateSocketTokenRef = { token?: string };
-let privateSocketTokenRef: PrivateSocketTokenRef = {};
+const privateSocketTokenRef: PrivateSocketTokenRef = {};
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export class uWave {
   private jwt?: string;
   public options: IUWaveOptions;
@@ -34,46 +35,55 @@ export class uWave {
       process.env.UWAVE_API_BASE_URL = options.apiBaseUrl;
     }
 
-    if (options.authImmediately && options.credentials) {
-      const credentials = options.credentials;
+    const { credentials } = options;
+    if (options.authImmediately && credentials) {
       delete this.options.credentials;
 
       this.auth
         .login(credentials.email, credentials.password)
-        .then(() => this.socket.connect());
+        .then(() => this.socket.connect())
+        .catch((err) => {
+          throw err;
+        });
     }
   }
 
-  get auth() {
-    return (
-      this.modules.auth ||
-      (this.modules.auth = new Auth(this, (jwt, socketToken) => {
+  get auth(): Auth {
+    if (!this.modules.auth) {
+      this.modules.auth = new Auth(this, (jwt, socketToken) => {
         this.jwt = jwt;
         privateSocketTokenRef.token = socketToken;
-      }))
-    );
+      });
+    }
+
+    return this.modules.auth;
   }
 
-  get socket() {
-    return (
-      this.modules.socket ||
-      (this.modules.socket = new Socket(this, privateSocketTokenRef))
-    );
+  get socket(): Socket {
+    if (!this.modules.socket) {
+      this.modules.socket = new Socket(this, privateSocketTokenRef);
+    }
+
+    return this.modules.socket;
   }
 
-  get booth() {
-    return this.modules.booth || (this.modules.booth = new Booth(this));
+  get booth(): Booth {
+    if (!this.modules.booth) {
+      this.modules.booth = new Booth(this);
+    }
+
+    return this.modules.booth;
   }
 
-  get isAuthenticated() {
+  get isAuthenticated(): boolean {
     return !!this.jwt;
   }
 
-  public sendChat(message: string) {
+  public sendChat(message: string): void {
     return this.socket.send({ command: 'sendChat', data: message });
   }
 
-  public vote(direction: 1 | -1) {
+  public vote(direction: 1 | -1): void {
     return this.socket.send({ command: 'vote', data: direction });
   }
 
@@ -90,6 +100,10 @@ export class uWave {
       fetchOptions.headers.Authorization = `JWT ${this.jwt}`;
     }
 
+    if (!process.env.UWAVE_API_BASE_URL) {
+      throw new Error('Env "UWAVE_API_BASE_URL" is not set.');
+    }
+
     let url = process.env.UWAVE_API_BASE_URL + endpoint;
 
     if (method === 'get' && data) {
@@ -103,26 +117,26 @@ export class uWave {
       fetchOptions.body = JSON.stringify(data);
     }
 
-    return fetch(url, fetchOptions).then((res) => res.json());
+    return fetch(url, fetchOptions).then((res) => res.json() as Promise<R>);
   }
 
-  public get<I, R>(endpoint: string, query?: I) {
+  public get<I, R>(endpoint: string, query?: I): Promise<R> {
     return this.request<I, R>('get', endpoint, query);
   }
 
-  public post<I, R>(endpoint: string, data?: I) {
+  public post<I, R>(endpoint: string, data?: I): Promise<R> {
     return this.request<I, R>('post', endpoint, data);
   }
 
-  public put<I, R>(endpoint: string, data?: I) {
+  public put<I, R>(endpoint: string, data?: I): Promise<R> {
     return this.request<I, R>('put', endpoint, data);
   }
 
-  public patch<I, R>(endpoint: string, data?: I) {
+  public patch<I, R>(endpoint: string, data?: I): Promise<R> {
     return this.request<I, R>('patch', endpoint, data);
   }
 
-  public delete<I extends {}, R>(endpoint: string, query?: I) {
+  public delete<I, R>(endpoint: string, query?: I): Promise<R> {
     return this.request<I, R>('delete', endpoint, query);
   }
   // #endregion

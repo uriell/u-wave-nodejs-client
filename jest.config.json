@@ -1,0 +1,10 @@
+{
+  "clearMocks": true,
+  "collectCoverage": true,
+  "coverageDirectory": "coverage",
+  "coverageProvider": "v8",
+  "coverageReporters": ["lcov"],
+  "collectCoverageFrom": ["src/**/*.ts", "!src/**/index.ts", "src/index.ts"],
+  "preset": "ts-jest",
+  "testMatch": ["**/*.spec.ts"]
+}

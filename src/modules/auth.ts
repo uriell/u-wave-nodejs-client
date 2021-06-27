@@ -1,6 +1,7 @@
 import { uWave } from '..';
 import { parseDates } from '../helpers';
 import { uWaveAPI } from '../types';
+import { User } from '../types/entities';
 
 type AuthCallback = (jwt: string, socketToken: string) => void;
 
@@ -16,7 +17,7 @@ export default class Auth {
     this.onAuthenticated = onAuthenticated;
   }
 
-  public getCurrentUser() {
+  public getCurrentUser(): Promise<User | null> {
     return this.uw
       .get<{}, uWaveAPI.CurrentUserResponse>('/auth')
       .then((response) => {
@@ -26,13 +27,13 @@ export default class Auth {
       });
   }
 
-  public getSocketToken() {
+  public getSocketToken(): Promise<string> {
     return this.uw
       .get<{}, uWaveAPI.SocketTokenResponse>('/auth/socket')
       .then((res) => res.data.socketToken);
   }
 
-  public login(email: string, password: string) {
+  public login(email: string, password: string): Promise<User> {
     return this.uw
       .post<uWaveAPI.LoginBody, uWaveAPI.LoginResponse>('/auth/login', {
         email,
@@ -45,7 +46,7 @@ export default class Auth {
       });
   }
 
-  public logout() {
+  public logout(): Promise<null> {
     return this.uw
       .delete<{}, uWaveAPI.EmptyItemResponse>('/auth')
       .then(() => null);
