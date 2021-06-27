@@ -1,4 +1,5 @@
 import { EventEmitter } from 'node:events';
+
 import { PrivateSocketTokenRef, uWave } from '..';
 import SocketModule from './socket';
 

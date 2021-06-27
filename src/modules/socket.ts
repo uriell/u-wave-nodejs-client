@@ -1,4 +1,4 @@
-import * as WebSocket from 'ws';
+import WebSocket from 'ws';
 import { EventEmitter } from 'node:events';
 
 import { PrivateSocketTokenRef, uWave } from '../index.js';
