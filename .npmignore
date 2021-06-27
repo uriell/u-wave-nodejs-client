@@ -2,3 +2,5 @@ src/
 example/
 tsconfig.json
 .prettierrc
+.eslintrc
+jest.config.js

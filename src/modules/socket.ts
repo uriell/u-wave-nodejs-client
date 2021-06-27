@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import { PrivateSocketTokenRef, uWave } from '..';
 import { Commands, SocketEvents, SocketPayloadsMap } from '../types';
 
-let privateSocketTokenRef: PrivateSocketTokenRef = {};
+const privateSocketTokenRef: PrivateSocketTokenRef = {};
 
 export default class Socket {
   private uw: uWave;
@@ -21,49 +21,52 @@ export default class Socket {
     privateSocketTokenRef.token = tokenRef.token;
   }
 
-  public get isConnected() {
+  public get isConnected(): boolean {
     return this.socket?.readyState === WebSocket.OPEN;
   }
 
   public once<E extends Commands>(
     eventName: E,
     listener: (payload: SocketPayloadsMap[E]) => void
-  ) {
+  ): EventEmitter {
     return this.emitter.on(eventName, listener);
   }
 
   public on<E extends Commands>(
     eventName: E,
     listener: (payload: SocketPayloadsMap[E]) => void
-  ) {
+  ): EventEmitter {
     return this.emitter.on(eventName, listener);
   }
 
   public off<E extends Commands>(
     eventName: E,
     listener: (payload: SocketPayloadsMap[E]) => void
-  ) {
+  ): EventEmitter {
     return this.emitter.off(eventName, listener);
   }
 
-  public connect() {
+  public connect(): void {
     return this.connectSocket(this.uw.options.wsConnectionString);
   }
 
-  public disconnect() {
+  public disconnect(): void {
     if (this.socket) {
       this.socket.close();
     }
   }
 
-  public emit<E extends Commands>(command: E, payload?: SocketPayloadsMap[E]) {
+  public emit<E extends Commands>(
+    command: E,
+    payload?: SocketPayloadsMap[E]
+  ): boolean {
     return this.emitter.emit(command, payload);
   }
 
-  public send<I>(message: I) {
+  public send<I>(message: I): void {
     if (!this.socket || this.socket.readyState !== WebSocket.OPEN) return;
 
-    return this.socket.send(JSON.stringify(message));
+    this.socket.send(JSON.stringify(message));
   }
 
   private connectSocket(connectionString: string) {
@@ -111,9 +114,9 @@ export default class Socket {
     let payload: SocketEvents;
 
     try {
-      payload = JSON.parse(event.data);
+      payload = JSON.parse(event.data) as SocketEvents;
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       return;
     }
 

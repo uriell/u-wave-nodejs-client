@@ -212,8 +212,8 @@ type LibCommands = 'login' | 'connected' | 'disconnected' | 'error';
 
 export type Commands = SocketCommands | LibCommands;
 
-export type SocketPayloadsMap = {
-  [key: string]: any;
+export interface SocketPayloadsMap
+  extends Record<Commands, SocketEvents['data']> {
   'acl:allow': uWaveSocket.AclAllow['data'];
   'acl:disallow': uWaveSocket.AclDisallow['data'];
   advance: uWaveSocket.Advance['data'];
@@ -242,4 +242,4 @@ export type SocketPayloadsMap = {
   waitlistMove: uWaveSocket.WaitlistMove['data'];
   waitlistRemove: uWaveSocket.WaitlistRemove['data'];
   waitlistUpdate: uWaveSocket.WaitlistUpdate['data'];
-};
+}

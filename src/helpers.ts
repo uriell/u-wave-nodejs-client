@@ -1,7 +1,7 @@
-export function parseDates<I>(obj: I, paths: string[]): I {
-  let newObj: I = JSON.parse(JSON.stringify(obj));
+export function parseDates<I extends Nested>(obj: I, paths: string[]): I {
+  const newObj: I = JSON.parse(JSON.stringify(obj)) as I;
 
-  for (const path of paths) {
+  paths.forEach((path) => {
     const subpaths = path.split('.');
 
     setPathValue(
@@ -9,43 +9,44 @@ export function parseDates<I>(obj: I, paths: string[]): I {
       [...subpaths],
       new Date(getPathValue(obj, [...subpaths]))
     );
-  }
+  });
 
   return newObj;
 }
 
-function getPathValue<I extends Record<string, any>, R>(
-  obj: I,
-  path: string[]
-): R {
-  const value = obj[path[0]];
+function getPathValue<I extends Nested, R>(obj: I, path: string[]): R {
+  const value = obj[path[0]] as Nested | R;
   path.shift();
 
   if (!path.length || typeof value === 'undefined' || value === null)
-    return value;
+    return value as R;
 
-  return getPathValue(value, path);
+  return getPathValue(value as Nested, path);
 }
 
-export function setPathValue(
-  obj: { [key: string]: any },
+type Nested = { [key: string]: unknown | Nested };
+
+export function setPathValue<Value>(
+  obj: Nested,
   path: string[],
-  value: any
-): { [key: string]: typeof value } {
+  value: Value
+): void {
   const subPath = path[0];
 
   if (path.length === 1 && subPath) {
+    // eslint-disable-next-line no-param-reassign
     obj[subPath] = value;
-    return obj;
+    return;
   }
 
   path.shift();
 
   if (!obj[subPath]) {
+    // eslint-disable-next-line no-param-reassign
     obj[subPath] = {};
   }
 
-  return setPathValue(obj[subPath], path, value);
+  setPathValue(obj[subPath] as Nested, path, value);
 }
 
 export function groupById<I extends { _id: string }>(
