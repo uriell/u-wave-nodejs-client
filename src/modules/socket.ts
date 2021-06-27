@@ -1,5 +1,5 @@
 import * as WebSocket from 'ws';
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 import { PrivateSocketTokenRef, uWave } from '..';
 import { Commands, SocketEvents, SocketPayloadsMap } from '../types';

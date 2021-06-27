@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "ES2020",
+    "moduleResolution": "node",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
     "declaration": true,
-    "target": "es2016"
+    "target": "es2019"
   },
   "compileOnSave": true,
   "include": ["src"]
