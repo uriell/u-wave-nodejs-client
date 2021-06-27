@@ -3,7 +3,7 @@ import {
   Media,
   Playback,
   User,
-  VOTE_DIRECTIONS,
+  VoteDirections,
 } from './entities';
 
 type ItemResponse<Data = {}, Meta = {}> = {
@@ -70,10 +70,10 @@ export declare namespace uWaveAPI {
     { media: Media[]; user: User[] }
   >;
 
-  type CurrentVoteResponse = ItemResponse<VOTE_DIRECTIONS>;
+  type CurrentVoteResponse = ItemResponse<VoteDirections>;
 
   type VoteBody = {
-    direction: VOTE_DIRECTIONS.UPVOTE | VOTE_DIRECTIONS.DOWNVOTE;
+    direction: VoteDirections.UPVOTE | VoteDirections.DOWNVOTE;
   };
 
   type FavoriteBody = { playlistID: string; historyID: string };

@@ -3,7 +3,7 @@ import { PrivateSocketTokenRef, uWave } from '..';
 import SocketModule from './socket';
 
 test('should create an socket module instance', () => {
-  const uw = {} as uWave;
+  const uw = new (class Test {})() as uWave;
   const privateSocketTokenRef: PrivateSocketTokenRef = {};
   const socket = new SocketModule(uw, privateSocketTokenRef);
 
@@ -18,7 +18,7 @@ Socket {
     "_maxListeners": undefined,
     Symbol(kCapture): false,
   },
-  "uw": Object {},
+  "uw": Test {},
 }
 `);
 });

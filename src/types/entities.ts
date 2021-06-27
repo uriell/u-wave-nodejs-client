@@ -50,7 +50,7 @@ export type HistoryEntry = {
   };
 };
 
-export enum VOTE_DIRECTIONS {
+export enum VoteDirections {
   UPVOTE = 1,
   DIDNT_VOTE = 0,
   DOWNVOTE = -1,
