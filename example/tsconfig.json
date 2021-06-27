@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "ESNext",
+    "moduleResolution": "node",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
     "declaration": true,
-    "target": "es2016"
+    "target": "ES2019"
   },
   "compileOnSave": true,
   "include": ["src"]

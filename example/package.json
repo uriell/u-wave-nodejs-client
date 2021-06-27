@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "an example of u-wave-node-js-client usage",
   "main": "src/index.ts",
+  "type": "module",
   "license": "MIT",
   "private": true,
+  "engines": {
+    "node": ">= 12"
+  },
   "scripts": {
-    "start": "ts-node src/"
+    "start": "node --loader ts-node/esm ./src/index.ts"
   },
   "devDependencies": {
     "ts-node": "9.1.1",

@@ -55,4 +55,5 @@ process.on('SIGINT', () => {
 
 uw.auth
   .login(credentials.email, credentials.password)
-  .then(() => uw.socket.connect());
+  .then(() => uw.socket.connect())
+  .catch(console.error);
