@@ -1,5 +1,5 @@
-import { PaginatedMeta } from './api';
-import { HistoryEntry } from './entities';
+import type { PaginatedMeta } from './api.js';
+import type { HistoryEntry } from './entities.js';
 
 export type PaginatedHistoryEntries = PaginatedResponse<{
   historyEntries: HistoryEntry[];

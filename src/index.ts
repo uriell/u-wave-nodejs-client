@@ -1,6 +1,6 @@
 import fetch, { RequestInit } from 'node-fetch';
 
-import { Auth, Booth, Socket } from './modules';
+import { Auth, Booth, Socket } from './modules/index.js';
 
 export interface IUWaveOptions {
   apiBaseUrl: string;

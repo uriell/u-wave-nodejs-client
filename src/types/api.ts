@@ -1,10 +1,10 @@
-import {
+import type {
   HistoryEntry,
   Media,
   Playback,
   User,
   VoteDirections,
-} from './entities';
+} from './entities.js';
 
 type ItemResponse<Data = {}, Meta = {}> = {
   meta: Meta;

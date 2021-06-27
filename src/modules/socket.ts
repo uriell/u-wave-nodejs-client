@@ -1,8 +1,12 @@
 import * as WebSocket from 'ws';
 import { EventEmitter } from 'node:events';
 
-import { PrivateSocketTokenRef, uWave } from '..';
-import { Commands, SocketEvents, SocketPayloadsMap } from '../types';
+import { PrivateSocketTokenRef, uWave } from '../index.js';
+import type {
+  Commands,
+  SocketEvents,
+  SocketPayloadsMap,
+} from '../types/socket.js';
 
 const privateSocketTokenRef: PrivateSocketTokenRef = {};
 

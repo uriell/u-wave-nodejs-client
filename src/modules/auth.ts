@@ -1,7 +1,8 @@
-import { uWave } from '..';
-import { parseDates } from '../helpers';
-import { uWaveAPI } from '../types';
-import { User } from '../types/entities';
+import { uWave } from '../index.js';
+import { parseDates } from '../helpers.js';
+
+import type { uWaveAPI } from '../types/api.js';
+import type { User } from '../types/entities.js';
 
 type AuthCallback = (jwt: string, socketToken: string) => void;
 

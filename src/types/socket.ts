@@ -1,4 +1,4 @@
-import { Playback, User } from './entities';
+import type { Playback, User } from './entities.js';
 
 declare namespace uWaveSocket {
   type Authenticated = {

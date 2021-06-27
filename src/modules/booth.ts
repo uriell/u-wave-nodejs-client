@@ -1,15 +1,20 @@
-import { uWave } from '..';
+import { uWave } from '../index.js';
+import Auth from './auth.js';
+import { groupById, parseDates, setPathValue } from '../helpers.js';
+import { VoteDirections as VOTE_DIRECTIONS } from '../types/entities.js';
 
-import { groupById, parseDates, setPathValue } from '../helpers';
-import { uWaveAPI } from '../types';
-import Auth from './auth';
-import { HistoryEntry, Playback, VoteDirections } from '../types/entities';
-import { PaginatedHistoryEntries } from '../types/domain';
+import type {
+  HistoryEntry,
+  Playback,
+  VoteDirections,
+} from '../types/entities.js';
+import type { PaginatedHistoryEntries } from '../types/domain.js';
+import type { uWaveAPI } from '../types/api.js';
 
 export default class Booth {
   private uw: uWave;
 
-  static VoteDirections = VoteDirections;
+  static VoteDirections = VOTE_DIRECTIONS;
   static HISTORY_ENTRY_DATE_FIELDS = [
     'playedAt',
     'media.media.createdAt',
@@ -53,7 +58,9 @@ export default class Booth {
         const includedUsers = groupById(response.included.user);
 
         const historyEntries = response.data.map((historyEntry) => {
-          const newHistoryEntry = { ...historyEntry };
+          const newHistoryEntry = {
+            ...historyEntry,
+          } as uWaveAPI.HistoryListEntry;
 
           (newHistoryEntry as HistoryEntry).user =
             includedUsers[newHistoryEntry.user];

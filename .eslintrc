@@ -14,17 +14,17 @@
   ],
   "rules": {
     "import/no-cycle": "off",
-    "no-underscore-dangle": ["error", { "allow": ["_id"] }],
-    "@typescript-eslint/lines-between-class-members": [
-      "error",
-      { "exceptAfterSingleLine": true }
-    ],
     "@typescript-eslint/no-use-before-define": "off",
     "@typescript-eslint/ban-types": "off",
+    "no-underscore-dangle": ["error", { "allow": ["_id"] }],
     "@typescript-eslint/no-namespace": ["error", { "allowDeclarations": true }],
     "@typescript-eslint/dot-notation": [
       "error",
       { "allowPrivateClassPropertyAccess": true }
+    ],
+    "@typescript-eslint/lines-between-class-members": [
+      "error",
+      { "exceptAfterSingleLine": true }
     ]
   }
 }

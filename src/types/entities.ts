@@ -1,4 +1,4 @@
-import { SourceData } from './sources';
+import type { SourceData } from './sources.js';
 
 export type Media = {
   _id: string;
