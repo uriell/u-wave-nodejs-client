@@ -7,16 +7,22 @@
   "author": "Uriell <me+github@uriell.dev>",
   "license": "MIT",
   "private": false,
+  "engines": {
+    "node": ">= 16"
+  },
   "scripts": {
     "dev": "npm run build -- -w",
     "build": "tsc",
-    "prepare": "npm run build",
     "release": "np --no-yarn",
-    "format:all": "npm run format -- --check \"src/**/*.ts\"",
-    "format": "prettier",
-    "lint:all": "npm run lint -- \"src/**/*.ts\"",
-    "lint": "eslint",
-    "test": "jest"
+    "format:all": "npm run format:ts -- --check \"src/**/*.ts\"",
+    "format:ts": "prettier",
+    "format": "npm run format:all",
+    "lint:all": "npm run lint:ts -- \"src/**/*.ts\"",
+    "lint:ts": "eslint",
+    "lint": "npm run lint:all",
+    "test:ts": "jest",
+    "test:ci": "CI=true npm run test:ts",
+    "test": "npm run test:ts -- --watch"
   },
   "dependencies": {
     "node-fetch": "2.6.1",

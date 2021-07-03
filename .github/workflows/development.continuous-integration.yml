@@ -1,0 +1,29 @@
+name: CI (Development)
+on:
+  push:
+    branches-ignore:
+      - master
+    paths:
+      - '.github/workflows/default.continuous-integration.yml'
+      - 'package*.json'
+      - 'src/**'
+jobs:
+  quality-control:
+    name: 'Quality Control >'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        script: ['lint', 'format', 'build', 'test:ci']
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Setup node v16.x environment
+        uses: actions/setup-node@v2
+        with:
+          cache: 'npm'
+          node-version: '16.x'
+      - name: Install npm dependencies
+        run: npm ci
+      - name: Run ${{ matrix.script }} on npm package
+        run: npm run ${{ matrix.script }}
