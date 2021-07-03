@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 
 import { PrivateTokenRef, uWave } from '..';
 import { Commands, SocketEvents, SocketPayloadsMap } from '../types';
+import { Http } from '.';
 
 let privateSocketTokenRef: PrivateTokenRef = {};
 
@@ -83,7 +84,7 @@ export default class Socket {
 
     if (!this.socket || !this.isConnected) return;
 
-    if (!privateSocketTokenRef.token && this.uw.isAuthenticated) {
+    if (!privateSocketTokenRef.token && Http.isAuthenticated) {
       privateSocketTokenRef = { token: await this.uw.auth.getSocketToken() };
     }
 
