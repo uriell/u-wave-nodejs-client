@@ -1,0 +1,25 @@
+name: CD (Release)
+on:
+  push:
+    branches:
+      - main
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+      - name: Setup node 12 environment
+        uses: actions/setup-node@v2
+        with:
+          cache: 'npm'
+          node-version: 12'
+      - name: Install npm dependencies
+        run: npm ci
+      - name: Release the package
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
