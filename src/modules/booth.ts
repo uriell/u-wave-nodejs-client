@@ -21,7 +21,7 @@ export default class Booth {
   }
 
   public getBooth(): Promise<HistoryEntry | null> {
-    return this.uw
+    return this.uw.http
       .get<{}, uWaveAPI.BoothResponse>('/booth')
       .then((response) => {
         if (!response.data) return null;
@@ -43,7 +43,7 @@ export default class Booth {
     if (media) queryOptions.filter = { media };
     if (offset || limit) queryOptions.page = { offset, limit };
 
-    return this.uw
+    return this.uw.http
       .get<uWaveAPI.HistoryQuery, uWaveAPI.HistoryResponse>(
         '/booth/history',
         queryOptions
@@ -99,7 +99,7 @@ export default class Booth {
   }
 
   public getVote(historyId: string): Promise<VoteDirections> {
-    return this.uw
+    return this.uw.http
       .get<{}, uWaveAPI.CurrentVoteResponse>(`/booth/${historyId}/vote`)
       .then((res) => res.data);
   }
@@ -108,7 +108,7 @@ export default class Booth {
     historyId: string,
     direction: VoteDirections.UPVOTE | VoteDirections.DOWNVOTE
   ): Promise<null> {
-    return this.uw
+    return this.uw.http
       .put<uWaveAPI.VoteBody, uWaveAPI.EmptyItemResponse>(
         `/booth/${historyId}/vote`,
         { direction }
@@ -120,7 +120,7 @@ export default class Booth {
     playlistID: string,
     historyID: string
   ): Promise<{ item: Playback; playlistSize: number }> {
-    return this.uw
+    return this.uw.http
       .post<uWaveAPI.FavoriteBody, uWaveAPI.FavoriteResponse>(
         '/booth/favorite',
         { playlistID, historyID }
@@ -142,7 +142,7 @@ export default class Booth {
     userID?: string,
     reason?: string
   ): Promise<null> {
-    return this.uw
+    return this.uw.http
       .post<uWaveAPI.SkipBody, uWaveAPI.EmptyItemResponse>('/booth/skip', {
         userID,
         reason,
@@ -152,7 +152,7 @@ export default class Booth {
   }
 
   public replaceBooth(userID: string): Promise<null> {
-    return this.uw
+    return this.uw.http
       .post<uWaveAPI.ReplaceBoothBody, uWaveAPI.EmptyItemResponse>(
         '/booth/skip',
         {
