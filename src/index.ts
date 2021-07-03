@@ -85,10 +85,6 @@ export class uWave {
     return this.modules.booth;
   }
 
-  get isAuthenticated(): boolean {
-    return !!this.jwt;
-  }
-
   public sendChat(message: string): void {
     return this.socket.send({ command: 'sendChat', data: message });
   }
