@@ -9,10 +9,8 @@ const credentials = {
 };
 
 const uw = new uWave({
-  authImmediately: false,
   apiBaseUrl: process.env.API_BASE_URL || '',
   wsConnectionString: process.env.WEBSOCKET_CONNECTION_STRING || '',
-  // credentials,
 });
 
 let isShuttingDown = false;
