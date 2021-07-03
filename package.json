@@ -11,6 +11,7 @@
     "node": ">= 16"
   },
   "scripts": {
+    "prepare": "husky install",
     "dev": "npm run build -- -w",
     "build": "tsc",
     "format:all": "npm run format:ts -- --check \"src/**/*.ts\"",
@@ -43,7 +44,9 @@
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.23.4",
     "eslint-plugin-jest": "24.3.6",
+    "husky": "7.0.0",
     "jest": "27.0.4",
+    "lint-staged": "11.0.0",
     "prettier": "2.2.1",
     "ts-jest": "27.0.3",
     "typescript": "4.1.5"
@@ -52,5 +55,14 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "npm run format:ts -- --write",
+      "npm run lint:ts -- --fix",
+      "npm run test:ts -- --bail --findRelatedTests"
+    ],
+    "*.js": "eslint --cache --fix",
+    "*.format:all": "prettier --write"
   }
 }
