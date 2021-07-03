@@ -3,11 +3,6 @@ import { Auth, Booth, Chat, Http, Socket } from './modules';
 export interface IUWaveOptions {
   apiBaseUrl: string;
   wsConnectionString: string;
-  authImmediately?: boolean;
-  credentials?: {
-    email: string;
-    password: string;
-  };
 }
 
 export type PrivateTokenRef = { token?: string };
@@ -30,22 +25,6 @@ export class uWave {
 
   constructor(options: IUWaveOptions) {
     this.options = options;
-
-    if (!process.env.UWAVE_API_BASE_URL) {
-      process.env.UWAVE_API_BASE_URL = options.apiBaseUrl;
-    }
-
-    const { credentials } = options;
-    if (options.authImmediately && credentials) {
-      delete this.options.credentials;
-
-      this.auth
-        .login(credentials.email, credentials.password)
-        .then(() => this.socket.connect())
-        .catch((err) => {
-          throw err;
-        });
-    }
   }
 
   get auth(): Auth {
