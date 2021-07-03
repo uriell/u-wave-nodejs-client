@@ -13,7 +13,6 @@
   "scripts": {
     "dev": "npm run build -- -w",
     "build": "tsc",
-    "release:old": "np --no-yarn",
     "format:all": "npm run format:ts -- --check \"src/**/*.ts\"",
     "format:ts": "prettier",
     "format": "npm run format:all",
@@ -23,8 +22,7 @@
     "test:ts": "jest",
     "test:ci": "CI=true npm run test:ts",
     "test": "npm run test:ts -- --watch",
-    "cz": "cz",
-    "release": "semantic-release"
+    "cz": "cz"
   },
   "dependencies": {
     "node-fetch": "2.6.1",
@@ -46,9 +44,7 @@
     "eslint-plugin-import": "2.23.4",
     "eslint-plugin-jest": "24.3.6",
     "jest": "27.0.4",
-    "np": "7.5.0",
     "prettier": "2.2.1",
-    "semantic-release": "^17.4.4",
     "ts-jest": "27.0.3",
     "typescript": "4.1.5"
   },
