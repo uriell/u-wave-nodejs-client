@@ -2,7 +2,7 @@ name: CI (Development)
 on:
   push:
     branches-ignore:
-      - master
+      - main
     paths:
       - '.github/workflows/development.continuous-integration.yml'
       - 'package*.json'
