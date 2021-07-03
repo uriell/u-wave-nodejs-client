@@ -1,5 +1,3 @@
-import fetch, { RequestInit } from 'node-fetch';
-
 import { Auth, Booth, Http, Socket } from './modules';
 
 export interface IUWaveOptions {
@@ -18,7 +16,6 @@ let privateHttpTokenRef: PrivateTokenRef = {};
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export class uWave {
-  private jwt?: string;
   public options: IUWaveOptions;
 
   // #region modules
@@ -92,69 +89,4 @@ export class uWave {
   public vote(direction: 1 | -1): void {
     return this.socket.send({ command: 'vote', data: direction });
   }
-
-  // #region http
-  public request<I extends {}, R extends {}>(
-    method: 'get' | 'post' | 'put' | 'patch' | 'delete',
-    endpoint: string,
-    data?: I
-  ): Promise<R> {
-    const fetchOptions: RequestInit = { method };
-    fetchOptions.headers = {};
-
-    if (this.jwt) {
-      fetchOptions.headers.Authorization = `JWT ${this.jwt}`;
-    }
-
-    if (!process.env.UWAVE_API_BASE_URL) {
-      throw new Error('Env "UWAVE_API_BASE_URL" is not set.');
-    }
-
-    let url = process.env.UWAVE_API_BASE_URL + endpoint;
-
-    if (method === 'get' && data) {
-      const querystring = querystringify(data);
-
-      if (querystring) {
-        url += `?${querystring}`;
-      }
-    } else if (data) {
-      fetchOptions.headers['Content-Type'] = 'application/json';
-      fetchOptions.body = JSON.stringify(data);
-    }
-
-    return fetch(url, fetchOptions).then((res) => res.json() as Promise<R>);
-  }
-
-  public get<I, R>(endpoint: string, query?: I): Promise<R> {
-    return this.request<I, R>('get', endpoint, query);
-  }
-
-  public post<I, R>(endpoint: string, data?: I): Promise<R> {
-    return this.request<I, R>('post', endpoint, data);
-  }
-
-  public put<I, R>(endpoint: string, data?: I): Promise<R> {
-    return this.request<I, R>('put', endpoint, data);
-  }
-
-  public patch<I, R>(endpoint: string, data?: I): Promise<R> {
-    return this.request<I, R>('patch', endpoint, data);
-  }
-
-  public delete<I, R>(endpoint: string, query?: I): Promise<R> {
-    return this.request<I, R>('delete', endpoint, query);
-  }
-  // #endregion
 }
-
-const querystringify = (obj: object = {}, keyPrefix?: string): string =>
-  Object.entries(obj)
-    .map(([key, value]) =>
-      typeof value !== 'object'
-        ? [keyPrefix ? `${keyPrefix}[${key}]` : key, value]
-            .map(encodeURIComponent)
-            .join('=')
-        : querystringify(value, key)
-    )
-    .join('&');
