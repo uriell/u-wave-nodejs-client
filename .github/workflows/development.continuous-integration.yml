@@ -4,7 +4,7 @@ on:
     branches-ignore:
       - master
     paths:
-      - '.github/workflows/default.continuous-integration.yml'
+      - '.github/workflows/development.continuous-integration.yml'
       - 'package*.json'
       - 'src/**'
 jobs:
@@ -14,15 +14,16 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
+        node_version: [12, 14, 16]
         script: ['lint', 'format', 'build', 'test:ci']
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
-      - name: Setup node v16.x environment
+      - name: Setup node ${{ matrix.node_version }} environment
         uses: actions/setup-node@v2
         with:
           cache: 'npm'
-          node-version: '16.x'
+          node-version: ${{ matrix.node_version }}
       - name: Install npm dependencies
         run: npm ci
       - name: Run ${{ matrix.script }} on npm package
