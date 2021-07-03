@@ -1,6 +1,6 @@
 import fetch, { RequestInit } from 'node-fetch';
 
-import { Auth, Booth, Socket } from './modules';
+import { Auth, Booth, Http, Socket } from './modules';
 
 export interface IUWaveOptions {
   apiBaseUrl: string;
@@ -14,6 +14,7 @@ export interface IUWaveOptions {
 
 export type PrivateTokenRef = { token?: string };
 let privateSocketTokenRef: PrivateTokenRef = {};
+const privateHttpTokenRef: PrivateTokenRef = {};
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export class uWave {
@@ -25,6 +26,7 @@ export class uWave {
     auth?: Auth;
     booth?: Booth;
     socket?: Socket;
+    http?: Http;
   } = {};
   // #endregion
 
@@ -65,6 +67,14 @@ export class uWave {
     }
 
     return this.modules.socket;
+  }
+
+  get http(): Http {
+    if (!this.modules.http) {
+      this.modules.http = new Http(this, privateHttpTokenRef);
+    }
+
+    return this.modules.http;
   }
 
   get booth(): Booth {
