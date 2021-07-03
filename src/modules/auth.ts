@@ -18,7 +18,7 @@ export default class Auth {
   }
 
   public getCurrentUser(): Promise<User | null> {
-    return this.uw
+    return this.uw.http
       .get<{}, uWaveAPI.CurrentUserResponse>('/auth')
       .then((response) => {
         if (!response.data) return null;
@@ -28,13 +28,13 @@ export default class Auth {
   }
 
   public getSocketToken(): Promise<string> {
-    return this.uw
+    return this.uw.http
       .get<{}, uWaveAPI.SocketTokenResponse>('/auth/socket')
       .then((res) => res.data.socketToken);
   }
 
   public login(email: string, password: string): Promise<User> {
-    return this.uw
+    return this.uw.http
       .post<uWaveAPI.LoginBody, uWaveAPI.LoginResponse>('/auth/login', {
         email,
         password,
@@ -47,7 +47,7 @@ export default class Auth {
   }
 
   public logout(): Promise<null> {
-    return this.uw
+    return this.uw.http
       .delete<{}, uWaveAPI.EmptyItemResponse>('/auth')
       .then(() => null);
   }
