@@ -1,10 +1,10 @@
 import * as WebSocket from 'ws';
 import { EventEmitter } from 'events';
 
-import { PrivateSocketTokenRef, uWave } from '..';
+import { PrivateTokenRef, uWave } from '..';
 import { Commands, SocketEvents, SocketPayloadsMap } from '../types';
 
-const privateSocketTokenRef: PrivateSocketTokenRef = {};
+let privateSocketTokenRef: PrivateTokenRef = {};
 
 export default class Socket {
   private uw: uWave;
@@ -14,11 +14,11 @@ export default class Socket {
 
   static KEEP_ALIVE_MESSAGE = '-';
 
-  constructor(uw: uWave, tokenRef: PrivateSocketTokenRef) {
+  constructor(uw: uWave, tokenRef: PrivateTokenRef) {
     this.uw = uw;
     this.emitter = new EventEmitter();
 
-    privateSocketTokenRef.token = tokenRef.token;
+    privateSocketTokenRef = tokenRef;
   }
 
   public get isConnected(): boolean {
@@ -84,7 +84,7 @@ export default class Socket {
     if (!this.socket || !this.isConnected) return;
 
     if (!privateSocketTokenRef.token && this.uw.isAuthenticated) {
-      privateSocketTokenRef.token = await this.uw.auth.getSocketToken();
+      privateSocketTokenRef = { token: await this.uw.auth.getSocketToken() };
     }
 
     if (privateSocketTokenRef.token) {

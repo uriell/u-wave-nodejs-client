@@ -12,8 +12,8 @@ export interface IUWaveOptions {
   };
 }
 
-export type PrivateSocketTokenRef = { token?: string };
-const privateSocketTokenRef: PrivateSocketTokenRef = {};
+export type PrivateTokenRef = { token?: string };
+let privateSocketTokenRef: PrivateTokenRef = {};
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export class uWave {
@@ -53,7 +53,7 @@ export class uWave {
     if (!this.modules.auth) {
       this.modules.auth = new Auth(this, (jwt, socketToken) => {
         this.jwt = jwt;
-        privateSocketTokenRef.token = socketToken;
+        privateSocketTokenRef = { token: socketToken };
       });
     }
 
