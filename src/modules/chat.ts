@@ -13,25 +13,25 @@ export default class Chat {
   }
 
   public deleteAll(): Promise<null> {
-    return this.uw
+    return this.uw.http
       .delete<{}, uWaveAPI.EmptyItemResponse>('/chat')
       .then(() => null);
   }
 
   public deleteAllByUser(userId: string): Promise<null> {
-    return this.uw
+    return this.uw.http
       .delete<{}, uWaveAPI.EmptyItemResponse>(`/chat/${userId}`)
       .then(() => null);
   }
 
   public deleteMessage(messageId: string): Promise<null> {
-    return this.uw
+    return this.uw.http
       .delete<{}, uWaveAPI.EmptyItemResponse>(`/chat/${messageId}`)
       .then(() => null);
   }
 
   public muteUser(userId: string, duration: number): Promise<null> {
-    return this.uw
+    return this.uw.http
       .post<uWaveAPI.MuteUserBody, uWaveAPI.EmptyItemResponse>(
         `/users/${userId}/mute`,
         { time: duration }
@@ -40,7 +40,7 @@ export default class Chat {
   }
 
   public unmuteUser(userId: string): Promise<null> {
-    return this.uw
+    return this.uw.http
       .delete<{}, uWaveAPI.EmptyItemResponse>(`/users/${userId}/mute`)
       .then(() => null);
   }
