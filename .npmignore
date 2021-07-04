@@ -1,7 +1,0 @@
-src/
-example/
-tsconfig.json
-.prettierrc
-.eslintrc
-.eslintignore
-jest.config.js

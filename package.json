@@ -55,11 +55,10 @@
       "path": "cz-conventional-changelog"
     }
   },
-  "lint-staged": {
-    "src/**/*.ts": [
-      "npm run format:ts -- --write",
-      "npm run lint:ts -- --fix",
-      "npm run test:ts -- --bail --findRelatedTests"
-    ]
-  }
+  "files": [
+    "LICENSE",
+    "README.md",
+    "package.json",
+    "lib"
+  ]
 }

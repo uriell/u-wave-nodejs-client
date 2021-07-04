@@ -1,0 +1,7 @@
+{
+  "src/**/*.ts": [
+    "npm run format:ts -- --write",
+    "npm run lint:ts -- --fix",
+    "npm run test:ts -- --bail --findRelatedTests"
+  ]
+}
