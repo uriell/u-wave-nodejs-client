@@ -3,6 +3,7 @@ on:
   push:
     branches-ignore:
       - main
+      - beta
     paths:
       - '.github/workflows/development.continuous-integration.yml'
       - 'package*.json'
