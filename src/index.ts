@@ -13,6 +13,10 @@ let privateHttpTokenRef: PrivateTokenRef = {};
 export class uWave {
   public options: IUWaveOptions;
 
+  constructor(options: IUWaveOptions) {
+    this.options = options;
+  }
+
   // #region modules
   private modules: {
     auth?: Auth;
@@ -21,11 +25,6 @@ export class uWave {
     socket?: Socket;
     http?: Http;
   } = {};
-  // #endregion
-
-  constructor(options: IUWaveOptions) {
-    this.options = options;
-  }
 
   get auth(): Auth {
     if (!this.modules.auth) {
@@ -69,4 +68,5 @@ export class uWave {
 
     return this.modules.chat;
   }
+  // #endregion
 }
