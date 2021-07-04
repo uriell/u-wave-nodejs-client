@@ -90,4 +90,6 @@ export declare namespace uWaveAPI {
     | { remove?: boolean };
 
   type ReplaceBoothBody = { userID: string };
+
+  type MuteUserBody = { time: number };
 }
