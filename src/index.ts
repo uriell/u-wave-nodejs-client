@@ -88,14 +88,6 @@ export class uWave {
     return !!this.jwt;
   }
 
-  public sendChat(message: string): void {
-    return this.socket.send({ command: 'sendChat', data: message });
-  }
-
-  public vote(direction: 1 | -1): void {
-    return this.socket.send({ command: 'vote', data: direction });
-  }
-
   // #region http
   public request<I extends {}, R extends {}>(
     method: 'get' | 'post' | 'put' | 'patch' | 'delete',
