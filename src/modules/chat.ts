@@ -6,4 +6,8 @@ export default class Chat {
   constructor(uw: uWave) {
     this.uw = uw;
   }
+
+  public sendChat(message: string): void {
+    return this.uw.socket.send({ command: 'sendChat', data: message });
+  }
 }
