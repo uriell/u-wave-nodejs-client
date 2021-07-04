@@ -1,6 +1,6 @@
 import fetch, { RequestInit } from 'node-fetch';
 
-import { Auth, Booth, Socket } from './modules';
+import { Auth, Booth, Chat, Socket } from './modules';
 
 export interface IUWaveOptions {
   apiBaseUrl: string;
@@ -25,6 +25,7 @@ export class uWave {
     auth?: Auth;
     booth?: Booth;
     socket?: Socket;
+    chat?: Chat;
   } = {};
   // #endregion
 
@@ -73,6 +74,14 @@ export class uWave {
     }
 
     return this.modules.booth;
+  }
+
+  get chat(): Chat {
+    if (!this.modules.chat) {
+      this.modules.chat = new Chat(this);
+    }
+
+    return this.modules.chat;
   }
 
   get isAuthenticated(): boolean {
