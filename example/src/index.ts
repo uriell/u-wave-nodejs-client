@@ -42,7 +42,7 @@ uw.socket.on('connected', () => {
 uw.socket.on('authenticated', () => {
   console.info('authenticated');
 
-  uw.sendChat('hello world');
+  uw.chat.sendChat('hello world');
 });
 
 process.on('SIGINT', () => {
