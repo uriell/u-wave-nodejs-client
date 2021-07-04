@@ -18,6 +18,8 @@ jobs:
           node-version: 12
       - name: Install npm dependencies
         run: npm ci
+      - name: Run build on npm package
+        run: npm run build
       - name: Release the package
         run: npx semantic-release
         env:
